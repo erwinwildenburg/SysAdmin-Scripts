@@ -152,183 +152,87 @@ if ($result -eq [System.Windows.Forms.DialogResult]::OK -and $PartnerListFormLis
 			{
 				Switch($SKU)
 				{
-					"EXCHANGE_L_STANDARD" {
-						$Licenses += "Exchange Online Plan 1"
-					}
-					"MCOLITE" {
-						$Licenses += "Lync Online Plan 1"
-					}
-					"SHAREPOINTLITE" {
-						$Licenses += "SharePoint Online Plan 1"
-					}
-					"OFFICE_PRO_PLUS_SUBSCRIPTION_SMBIZ" {
-						$Licenses += "Office ProPlus"
-					}
-					"EXCHANGE_S_STANDARD_MIDMARKET" {
-						$Licenses += "Exchange Online Plan 1"
-					}
-					"MCOSTANDARD_MIDMARKET" {
-						$Licenses += "Lync Online Plan 1"
-					}
-					"SHAREPOINTENTERPRISE_MIDMARKET" {
-						$Licenses += "SharePoint Online Plan 1"
-					}
-					"SHAREPOINTWAC" {
-						$Licenses += "Office Online"
-					}
-					"OFFICESUBSCRIPTION" {
-						$Licenses += "Office ProPlus"
-					}
-					"YAMMER_MIDSIZE" {
-						$Licenses += "Yammer"
-					}
-					"EXCHANGE_S_STANDARD" {
-						$Licenses += "Exchange Online Plan 2"
-					}
-					"MCOSTANDARD" {
-						$Licenses += "Lync Online Plan 2"
-					}
-					"SHAREPOINTENTERPRISE" {
-						$Licenses += "SharePoint Online Plan 2"
-					}
-					"SHAREPOINTWAC" {
-						$Licenses += "Office Online"
-					}
-					"RMS_S_ENTERPRISE" {
-						$Licenses += "Azure Active Directory Rights Management"
-					}
-					"YAMMER_ENTERPRISE" {
-						$Licenses += "Yammer Enterprise"
-					}
-					"MCVOICECONF" {
-						$Licenses += "Lync Online Plan 3"
-					}
-					"EXCHANGE_S_DESKLESS" {
-						$Licenses += "Exchange Online Kiosk"
-					}
-					"SHAREPOINTDESKLESS" {
-						$Licenses += "SharePoint Online Kiosk"
-					}
-					"YAMMER_ENTERPRISE" {
-						$Licenses += "Yammer Enterprise"
-					}
-					"EXCHANGE_S_DESKLESS" {
-						$Licenses += "Exchange Online Kiosk"
-					}
-					"SHAREPOINTDESKLESS" {
-						$Licenses += "SharePoint Online Kiosk"
-					}
-					"SHAREPOINTWAC" {
-						$Licenses += "Office Online"
-					}
-					"LITEPACK" {
-						$Licenses += "Office 365 Plan P1"
-					}
-					"STANDARDPACK" {
-						$Licenses += "Enterprise E1"
-					}
-					"STANDARDWOFFPACK" {
-						$Licenses += "Enterprise E2"
-					}
-					"DESKLESSPACK" {
-						$Licenses += "Office 365 Plan K1"
-					}
-					"EXCHANGEARCHIVE" {
-						$Licenses += "Exchange Online Archiving"
-					}
-					"EXCHANGETELCO" {
-						$Licenses += "Exchange Online POP"
-					}
-					"SHAREPOINTSTORAGE" {
-						$Licenses += "SharePoint Online Storage"
-					}
-					"SHAREPOINTPARTNER" {
-						$Licenses += "SharePoint Online Partner Access"
-					}
-					"PROJECTONLINE_PLAN_1" {
-						$Licenses += "Project Online Plan 1"
-					}
-					"PROJECTONLINE_PLAN_2" {
-						$Licenses += "Project Online Plan 2"
-					}
-					"PROJECT_CLIENT_SUBSCRIPTION" {
-						$Licenses += "Project Pro"
-					}
-					"VISIO_CLIENT_SUBSCRIPTION" {
-						$Licenses += "Visio Pro"
-					}
-					"INTUNE_A" {
-						$Licenses += "Intune"
-					}
-					"CRMSTANDARD" {
-						$Licenses += "CRM Online"
-					}
-					"CRMTESTINSTANCE" {
-						$Licenses += "CRM Test Instance"
-					}
-					"ONEDRIVESTANDARD" {
-						$Licenses += "OneDrive for Business"
-					}
-					"WACONEDRIVESTANDARD" {
-						$Licenses += "OneDrive Pack"
-					}
-					"SQL_IS_SSIM" {
-						$Licenses += "Power BI Information Services"
-					}
-					"BI_AZURE_P1" {
-						$Licenses += "Power BI Reporting and Analytics"
-					}
-					"EOP_ENTERPRISE" {
-						$Licenses += "Exchange Online Protection"
-					}
-					"PROJECT_ESSENTIALS" {
-						$Licenses += "Project Lite"
-					}
-					"CRMIUR" {
-						$Licenses += "CRM for Partners"
-					}
-					"NBPROFESSIONALFORCRM" {
-						$Licenses += "Microsoft Social Listening Professional"
-					}
-					"AAD_PREMIUM" {
-						$Licenses += "Azure Active Directory Premium"
-					}
-					"MFA_PREMIUM" {
-						$Licenses += "Azure Multi-Factor Authentication"
-					}
-					"SMB_BUSSPREM" {
-						$Licenses += "Office 365 Business Premium"
-					}
-					"ENTERPRISEPACK" {
-						$Licenses += "Enterprise E3"
-					}
-					"EXCHANGESTANDARD" {
-						$Licenses += "Exchange Online Plan 1"
-					}
-					"EXCHANGEENTERPRISE" {
-						$Licenses += "Exchange Online Plan 2"
-					}
-					"SMB_BUSINESS_PREMIUM" {
-						$Licenses += "Business Premium"
-					}
-					"PROJECTCLIENT" {
-						$Licenses += "Project Pro"
-					}
-					"POWER_BI_STANDALONE" {
-						$Licenses += "Microsoft Power BI"
-					}
-					"POWER_BI_STANDARD" {
-						$Licenses += "Microsoft Power BI"
-					}
-					"SMB_BUSINESS_ESSENTIALS" {
-						$Licenses += "Business Essentials"
-					}
-					"O365_BUSINESS_PREMIUM" {
-						$Licenses += "Business Premium"
-					}
-					default {
-						$Licenses += $SKU
-					}
+					"EXCHANGE_L_STANDARD" { $Licenses += "Exchange Online (Plan 1)" }
+					"MCOLITE" { $Licenses += "Lync Online (Plan 1)" }
+					"SHAREPOINTLITE" { $Licenses += "SharePoint Online (Plan 1)" }
+					"OFFICE_PRO_PLUS_SUBSCRIPTION_SMBIZ" { $Licenses += "Office Pro Plus" }
+					"EXCHANGE_S_STANDARD_MIDMARKET" { $Licenses += "Exchange Online (Plan 1)" }
+					"MCOSTANDARD_MIDMARKET" { $Licenses += "Lync Online (Plan 1)" }
+					"SHAREPOINTENTERPRISE_MIDMARKET" { $Licenses += "Sharepoint Online (Plan 1)" }
+					"SHAREPOINT_WAC" { $Licenses += "Office Online" }
+					"OFFICESUBSCRIPTION" { $Licenses += "Office ProPlus" }
+					"YAMMER_MIDSIZE" { $Licenses += "Yammer" }
+					"EXCHANGE_S_STANDARD" { $Licenses += "Exchange Online (Plan 2)" }
+					"MCOSTANDARD" { $Licenses += "Lync Online (Plan 2)" }
+					"SHAREPOINTENTERPRISE" { $Licenses += "Sharepoint Online (Plan 2)" }
+					"RMS_S_ENTERPRISE" { $Licenses += "Azure Active Directory Rights Management" }
+					"YAMMER_ENTERPRISE" { $Licenses += "Yammer" }
+					"MCVOICECONF" { $Licenses += "Lync Online (Plan 3)" }
+					"EXCHANGE_S_DESKLESS" { $Licenses += "Exchange Online Kiosk" }
+					"SHAREPOINTDESKLESS" { $Licenses += "SharePoint Online Kiosk" }
+					"STANDARDPACK_STUDENT" { $Licenses += "Microsoft Office 365 (Plan A1) for Students" }
+					"STANDARDPACK_FACULTY" { $Licenses += "Microsoft Office 365 (Plan A1) for Faculty" }
+					"STANDARDWOFFPACK_FACULTY" { $Licenses += "Office 365 Education E1 for Faculty" }
+					"STANDARDWOFFPACK_STUDENT" { $Licenses += "Microsoft Office 365 (Plan A2) for Students" }
+					"STANDARDWOFFPACK_IW_STUDENT" { $Licenses += "Office 365 Education for Students" }
+					"STANDARDWOFFPACK_IW_FACULTY" { $Licenses += "Office 365 Education for Faculy" }
+					"EOP_ENTERPRISE FACULTY" { $Licenses += "Exchange Online Protection for Faculty" }
+					"EXCHANGESTANDARD_STUDENT" { $Licenses += "Exchange Online (Plan 1) for Students" }
+					"OFFICESUBSCRIPTION_STUDENT" { $Licenses += "Office ProPlus Student Benefit" }
+					"OFFICESUBSCRIPTION_FACULTY" { $Licenses += "Office ProPlus Faculty Benefit" }
+					"PROJECTONLINE_PLAN1_FACULTY" { $Licenses += "Project Online for Faculty" }
+					"SHAREPOINTWAC_EDU" { $Licenses += "Office Online for Education" }
+					"SHAREPOINTENTERPRISE_EDU" { $Licenses += "SharePoint Plan 2 for EDU" }
+					"SHAREPOINT_PROJECT_EDU" { $Licenses += "Project Online for Education" }
+					"PROJECTONLINE_PLAN1_STUDENT" { $Licenses += "Project Online for Students" }
+					"STANDARDPACK_GOV" { $Licenses += "Microsoft Office 365 (Plan G1) for Government" }
+					"STANDARDWOFFPACK_GOV" { $Licenses += "Microsoft Office 365 (Plan G2) for Government" }
+					"ENTERPRISEPACK_GOV" { $Licenses += "Microsoft Office 365 (Plan G3) for Government" }
+					"ENTERPRISEWITHSCAL_GOV" { $Licenses += "Microsoft Office 365 (Plan G4) for Government" }
+					"DESKLESSPACK_GOV" { $Licenses += "Microsoft Office 365 (Plan K1) for Government" }
+					"EXCHANGESTANDARD_GOV" { $Licenses += "Microsoft Office 365 Exchange Online (Plan 1) only for Goverment" }
+					"EXCHANGEENTERPRISE_GOV" { $Licenses += "Microsoft Office 365 Exchange Online (Plan 2) only for Goverment" }
+					"SHAREPOINTDESKLESS_GOV" { $Licenses += "SharePoint Online Kiosk" }
+					"EXCHANGE_S_DESKLESS_GOV" { $Licenses += "Exchange Kiosk" }
+					"RMS_S_ENTERPRISE_GOV" { $Licenses += "Windows Azure Active Directory Rights Management" }
+					"OFFICESUBSCRIPTION_GOV" { $Licenses += "Office ProPlus" }
+					"MCOSTANDARD_GOV" { $Licenses += "Lync Plan 2G" }
+					"SHAREPOINTWAC_GOV" { $Licenses += "Office Online for Government" }
+					"SHAREPOINTENTERPRISE_GOV" { $Licenses += "SharePoint Plan 2G" }
+					"EXCHANGE_S_ENTERPRISE_GOV" { $Licenses += "Exchange Plan 2G" }
+					"EXCHANGE_S_ARCHIVE_ADDON_GOV" { $Licenses += "Exchange Online Archiving" }
+					"LITEPACK" { $Licenses += "Office 365 (Plan P1)" }
+					"STANDARDPACK" { $Licenses += "Microsoft Office 365 (Plan E1)" }
+					"STANDARDWOFFPACK" { $Licenses += "Microsoft Office 365 (Plan E2)" }
+					"DESKLESSPACK" { $Licenses += "Office 365 (Plan K1)" }
+					"EXCHANGEARCHIVE" { $Licenses += "Exchange Online Archiving" }
+					"EXCHANGETELCO" { $Licenses += "Exchange Online POP" }
+					"SHAREPOINTSTORAGE" { $Licenses += "SharePoint Online Storage" }
+					"SHAREPOINTPARTNER" { $Licenses += "SharePoint Online Partner Access" }
+					"PROJECTONLINE_PLAN_1" { $Licenses += "Project Online (Plan 1)" }
+					"PROJECTONLINE_PLAN_2" { $Licenses += "Project Online (Plan 2)" }
+					"PROJECT_CLIENT_SUBSCRIPTION" { $Licenses += "Project Pro for Office 365" }
+					"VISIO_CLIENT_SUBSCRIPTION" { $Licenses += "Visio Pro for Office 365" }
+					"INTUNE_A" { $Licenses += "Intune for Office 365" }
+					"CRMSTANDARD" { $Licenses += "CRM Online" }
+					"CRMTESTINSTANCE" { $Licenses += "CRM Test Instance" }
+					"ONEDRIVESTANDARD" { $Licenses += "OneDrive" }
+					"WACONEDRIVESTANDARD" { $Licenses += "OneDrive Pack" }
+					"SQL_IS_SSIM" { $Licenses += "Power BI Information Services" }
+					"BI_AZURE_P1" { $Licenses += "Power BI Reporting and Analytics" }
+					"EOP_ENTERPRISE" { $Licenses += "Exchange Online Protection" }
+					"PROJECT_ESSENTIALS" { $Licenses += "Project Lite" }
+					"CRMIUR" { $Licenses += "CRM for Partners" }
+					"NBPROFESSIONALFORCRM" { $Licenses += "Microsoft Social Listening Professional" }
+					"AAD_PREMIUM" { $Licenses += "Azure Active Directory Premium" }
+					"MFA_PREMIUM" { $Licenses += "Azure Multi-Factor Authentication" }
+					"CRMSTORAGE" { $Licenses += "Microsoft Dynamics CRM Online Additional Storage" }
+					"MDM_SALES_COLLABORATION" { $Licenses += "Microsoft Dynamics Marketing Sales Collaboration" }
+					"POWER_BI_STANDARD" { $Licenses += "Power BI" }
+					"O365_BUSINESS" { $Licenses += "Office 365 Business" }
+					"O365_BUSINESS_ESSENTIALS" { $Licenses += "Office 365 Business Essentials" }
+					"O365_BUSINESS_PREMIUM" { $Licenses += "Office 365 Business Premium" }
+					default { $Licenses += $SKU }
 				}
 			}
 			$Licenses = $Licenses -join "; "
