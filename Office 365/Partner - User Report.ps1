@@ -290,8 +290,6 @@ if ($result -eq [System.Windows.Forms.DialogResult]::OK -and $PartnerListFormLis
 		# Prompt to save file
 		$SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
 		$SaveFileDialog.filter = "Excel-werkmap|*.xlsx"
-		$SaveFileDialog.InitialDirectory = "X:\"
-		$SaveFileDialog.FileName = "$PartnerName - Gebruikers accounts Office 365.xlsx"
 		$SaveFileDialog.ShowDialog() | Out-Null
 		If ($SaveFileDialog.FileName -ne "") {
 			$Workbooks.saveas($SaveFileDialog.FileName)
