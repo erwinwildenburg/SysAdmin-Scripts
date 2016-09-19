@@ -12,7 +12,7 @@ foreach ($Folder in $Folders)
     icacls.exe $($Folder.FullName) /reset /T /C /L /Q
 
     # Recursively grant the user access rights to the folder
-    icacls.exe $($Folder.FullName) /grant $($Folder.BaseName) + ":(OI)(CI)F"
+    icacls.exe $($Folder.FullName) /grant ($($Folder.BaseName) + ":(OI)(CI)F") /C /L /Q
 
     # Set the owner back to the user
     icacls.exe $($Folder.FullName) /setowner $($Folder.BaseName) /T /C /L /Q
