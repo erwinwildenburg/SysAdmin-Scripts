@@ -105,7 +105,7 @@ foreach ($user in $users)
                 -StreetAddress $user.StreetAddress `
                 -Title $user.Title `
                 -UserPrincipalName $user.UserPrincipalName `
-                -Path "OU=de-DE,OU=IT_PE_Users,OU=IT_PE,DC=permadental,DC=local" `
+                -Path "OU=Users,DC=contoso,DC=local" `
                 -AccountPassword ("Welkom123!" | ConvertTo-SecureString -AsPlainText -Force) `
                 -Enabled $true `
                 -ErrorAction Stop
