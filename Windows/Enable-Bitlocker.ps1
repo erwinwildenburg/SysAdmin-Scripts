@@ -59,10 +59,20 @@ function BackupToAd
     $keyProtector = (Get-BitLockerVolume -MountPoint "C:").KeyProtector
     if ($keyProtector -ne $null)
     {
-        Backup-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId ((Get-BitLockerVolume -MountPoint "C:").KeyProtector | Where-Object KeyProtectorType -eq RecoveryPassword).KeyProtectorId    
+        $recoveryKeys = (Get-BitLockerVolume -MountPoint "C:").KeyProtector | Where-Object KeyProtectorType -eq RecoveryPassword
+        foreach ($recoveryKey in $recoveryKeys)
+        {
+            Backup-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $recoveryKey.KeyProtectorId
+        }
     }
 }
 
-if ($EnableTpm) { EnableTpmChip }
+# Enable TPM chip if required
+$tpmStatus = Get-Tpm
+if ($EnableTpm -and (!($?) -or $tpmStatus.TpmPresent -ne $true)) { EnableTpmChip }
+
+# Enable Bitlocker
 EnableBitlocker
+
+# Backup key to Active Directory
 if ($BackupToAd) { BackupToAd }
