@@ -1,8 +1,8 @@
 # Import required modules
-Import-Module ..\Shared\Connect-Office365.ps1
+Import-Module ..\Shared\Connect-Azure.ps1
 
 # Connect to Office 365
-$connectedToOffice365 = Connect-Office365
+$connectedToOffice365 = Connect-Azure -connectToExchange $true
 if (!$connectedToOffice365) { exit }
 
 # Get a list of all user mailboxes

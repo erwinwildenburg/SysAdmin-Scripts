@@ -1,12 +1,12 @@
 ﻿# Import required modules
-Import-Module ..\Shared\Connect-Office365.ps1
+Import-Module ..\Shared\Connect-Azure.ps1
 
 # Connect to Office 365
-$connectedToOffice365 = Connect-Office365
+$connectedToOffice365 = Connect-Azure -connectToExchange $true
 if (!$connectedToOffice365) { exit }
 
 # Get the information we want
-$exportData = "UserPrincipalName,DisplayName,Office,LastLogonTime,AccountEnabled,PasswordNeverExpires,Licenses,FullAccessPermissions,SendAsPermissions`n"
+$exportData = "UserPrincipalName,DisplayName,Office,LastLogonTime,AccountEnabled,PasswordNeverExpires,Licenses`n"
 $office365Users = Get-AzureADUser -All $true | Select-Object UserPrincipalName,DisplayName,PhysicalDeliveryOfficeName,AccountEnabled,PasswordNeverExpire,AssignedLicenses
 foreach ($user in $office365Users)
 {
@@ -16,8 +16,6 @@ foreach ($user in $office365Users)
 	$displayName = $user.DisplayName
 	$accountEnabled = $user.AccountEnabled
 	$office = $user.PhysicalDeliveryOfficeName
-	$fullAccess = (Get-MailboxPermission -Identity $user.UserPrincipalName -ErrorAction SilentlyContinue | Where-Object { $_.AccessRights.Contains("FullAccess") -and $_.User -match "^[a-zA-Z0-9.!£#$%&'^_`{}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" }).User -join ";"
-	$sendAs = (Get-RecipientPermission -Identity $user.UserPrincipalName -ErrorAction SilentlyContinue | Where-Object { $_.AccessRights.Contains("SendAs") -and $_.Trustee -match "^[a-zA-Z0-9.!£#$%&'^_`{}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" }).Trustee -join ";"
 
 	# Change user data if necessary
 	if ($lastLogonTime -eq $null)
@@ -149,13 +147,11 @@ foreach ($user in $office365Users)
 	}
 	$licenses = $licenses -join "; "
 
-	$exportData += "`"$userPrincipalName`",`"$displayName`",`"$office`",`"$lastLogonTime`",`"$accountEnabled`",`"$passwordExpiration`",`"$licenses`",`"$fullAccess`",`"$sendAs`"`n"
+	$exportData += "`"$userPrincipalName`",`"$displayName`",`"$office`",`"$lastLogonTime`",`"$accountEnabled`",`"$passwordExpiration`",`"$licenses`"`n"
 }
 
-# TEMP: Show data on console
-$exportData = $exportData | ConvertFrom-CSV
-
 # Convert data to Excel
+$exportData = $exportData | ConvertFrom-CSV
 $excel = New-Object -ComObject Excel.Application 
 $excel.visible = $false
 $excel.DisplayAlerts = $false
@@ -172,8 +168,6 @@ $worksheet.Cells.Item(1,4) = "Last login"
 $worksheet.Cells.Item(1,5) = "Sign-in status"
 $worksheet.Cells.Item(1,6) = "Password Expires"
 $worksheet.Cells.Item(1,7) = "Licenses"
-$worksheet.Cells.Item(1,8) = "Full acccess permissions"
-$worksheet.Cells.Item(1,9) = "Sendas permissions"
 
 # Add data
 $i = 2
@@ -186,8 +180,6 @@ foreach($row in $exportData)
 	$worksheet.Cells.Item($i,5) = $row.AccountEnabled
 	$worksheet.Cells.Item($i,6) = $row.PasswordNeverExpires
 	$worksheet.Cells.Item($i,7) = $row.Licenses
-	$worksheet.Cells.Item($i,8) = $row.FullAccessPermissions
-	$worksheet.Cells.Item($i,9) = $row.SendAsPermissions
 	$i++
 }
 

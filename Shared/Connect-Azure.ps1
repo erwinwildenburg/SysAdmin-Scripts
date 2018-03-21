@@ -1,5 +1,11 @@
-function Connect-Office365
+function Connect-Azure
 {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [bool] $connectToExchange = $false
+    )
+
     # Import requirements
     Import-Module AzureAD
     Add-Type -AssemblyName System.Windows.Forms
@@ -11,8 +17,11 @@ function Connect-Office365
     Get-PSSession | Remove-PSSession
 
     # Connect to your own tenant
-    $userCredential = Get-Credential -Credential $null
-    if (!$userCredential) { return $false }
+    if ($connectToExchange) {
+        $userCredential = Get-Credential -Credential $null
+        if (!$userCredential) { return $false }
+    }
+    Connect-AzureAD -ErrorAction Stop
 
     # Show a "Please wait..." form in case of many partners or slow connection
     $pleaseWaitForm = New-Object System.Windows.Forms.Form
@@ -33,7 +42,6 @@ function Connect-Office365
     # Connect to Office 365
     $pleaseWaitFormLabel.Text = "Getting partner list, please wait..."
     $pleaseWaitForm.Refresh()
-    Connect-AzureAD -ErrorAction Stop
 
     # Get all partner tenants
     $partnerContracts = Get-AzureADContract -All $true
@@ -96,10 +104,7 @@ function Connect-Office365
             $partnerTenantId = ($partnerContracts | Where-Object { $_.DisplayName -eq $partnerName }).CustomerContextId
 
             # Connect to Office 365
-            if ($partnerName -eq "Your own tenant") {
-                $connectionUri = "https://outlook.office365.com/powershell-liveid/"
-            }
-            else
+            if ($partnerName -ne "Your own tenant")
             {
                 Connect-AzureAD -TenantId $partnerTenantId
                 #Set-Variable -Name MSOLTenantid -Value $partnerTenantId -Scope Global
@@ -107,16 +112,23 @@ function Connect-Office365
             }
 
             # Connect to Exchange Online
-            $connectionUri = "https://ps.outlook.com/powershell-liveid?DelegatedOrg=" + $partnerTenantId
-            $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $connectionUri -Credential $userCredential -Authentication Basic -AllowRedirection -ErrorAction Stop
-            if (!$session) {
-                Write-Host "Failed to connect to Exchange Online of customer",$partnerName -ForegroundColor Red
-                return $false
-            }
-            else {
-                Import-PSSession $session -ErrorAction Stop -DisableNameChecking -AllowClobber | Out-Null
-                Write-Host "Succesfully connected to Exchange Online of customer",$partnerName -ForegroundColor Green
-                return $true
+            if ($connectToExchange)
+            {
+                $connectionUri = "https://outlook.office365.com/powershell-liveid/"
+                if ($partnerName -ne "Your own tenant")
+                {
+                    $connectionUri = "https://ps.outlook.com/powershell-liveid?DelegatedOrg=" + $partnerTenantId
+                }
+                $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $connectionUri -Credential $userCredential -Authentication Basic -AllowRedirection -ErrorAction Stop
+                if (!$session) {
+                    Write-Host "Failed to connect to Exchange Online of customer",$partnerName -ForegroundColor Red
+                    return $false
+                }
+                else {
+                    Import-PSSession $session -ErrorAction Stop -DisableNameChecking -AllowClobber | Out-Null
+                    Write-Host "Succesfully connected to Exchange Online of customer",$partnerName -ForegroundColor Green
+                    return $true
+                }
             }
         }
     }
