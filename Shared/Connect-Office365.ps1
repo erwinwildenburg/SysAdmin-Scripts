@@ -1,19 +1,14 @@
 function Connect-Office365
 {
-    [CmdletBinding()]
-    param()
-
     # Import requirements
-    Import-Module MSOnline
+    Import-Module AzureAD
     Add-Type -AssemblyName System.Windows.Forms
 
     # Cleanup first
     Register-EngineEvent -SourceIdentifier ([System.Management.Automation.PsEngineEvent]::Exiting) -Action {
         Get-PSSession | Remove-PSSession
-        Remove-Variable -Name MSOLTenantid -Scope Global -ErrorAction SilentlyContinue
     } | Out-Null
     Get-PSSession | Remove-PSSession
-    Remove-Variable -Name MSOLTenantid -Scope Global -ErrorAction SilentlyContinue
 
     # Connect to your own tenant
     $userCredential = Get-Credential -Credential $null
@@ -38,10 +33,10 @@ function Connect-Office365
     # Connect to Office 365
     $pleaseWaitFormLabel.Text = "Getting partner list, please wait..."
     $pleaseWaitForm.Refresh()
-    Connect-MsolService -Credential $userCredential -ErrorAction Stop
+    Connect-AzureAD -ErrorAction Stop
 
     # Get all partner tenants
-    $partnerContracts = Get-MsolPartnerContract -All
+    $partnerContracts = Get-AzureADContract -All $true
 
     # Close the form
     $pleaseWaitForm.Close()
@@ -80,15 +75,15 @@ function Connect-Office365
     $partnerListFormList.Size = New-Object System.Drawing.Size(460,20) 
     $partnerListFormList.Height = 250
     [void] $partnerListFormList.Items.Add("Your own tenant")
-    foreach ($partner in ($partnerContracts | Sort-Object -Property Name))
+    foreach ($partner in ($partnerContracts | Sort-Object -Property DisplayName))
     {
-        [void] $partnerListFormList.Items.Add($partner.Name)
+        [void] $partnerListFormList.Items.Add($partner.DisplayName)
     }
     $partnerListForm.Controls.Add($partnerListFormList)
     $partnerListFormCopyright = New-Object System.Windows.Forms.Label
     $partnerListFormCopyright.Location = New-Object System.Drawing.Size(290,320)
     $partnerListFormCopyright.Size = New-Object System.Drawing.Size(280,20)
-    $partnerListFormCopyright.Text = "Copyright " + [char]0x00A9 + " 2017 Erwin Wildenburg"
+    $partnerListFormCopyright.Text = "Copyright " + [char]0x00A9 + " 2018 Erwin Wildenburg"
     $partnerListFormCopyright.ForeColor = "Gray"
     $partnerListForm.Controls.Add($partnerListFormCopyright)
     $partnerListForm.Topmost = $True
@@ -98,7 +93,7 @@ function Connect-Office365
     {
         foreach ($partnerName in $partnerListFormList.SelectedItems)
         {
-            $partnerTenantId = ($partnerContracts | Where-Object { $_.Name -eq $partnerName }).TenantId.Guid
+            $partnerTenantId = ($partnerContracts | Where-Object { $_.DisplayName -eq $partnerName }).CustomerContextId
 
             # Connect to Office 365
             if ($partnerName -eq "Your own tenant") {
@@ -106,7 +101,8 @@ function Connect-Office365
             }
             else
             {
-                Set-Variable -Name MSOLTenantid -Value $partnerTenantId -Scope Global
+                Connect-AzureAD -TenantId $partnerTenantId
+                #Set-Variable -Name MSOLTenantid -Value $partnerTenantId -Scope Global
                 Write-Host "Succesfully connected to Office 365 of customer",$partnerName -ForegroundColor Green
             }
 

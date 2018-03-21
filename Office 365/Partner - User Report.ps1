@@ -6,18 +6,16 @@ $connectedToOffice365 = Connect-Office365
 if (!$connectedToOffice365) { exit }
 
 # Get the information we want
-$exportData = "UserPrincipalName,DisplayName,Office,LastLogonTime,LastPasswordChangeTimeStamp,BlockCredential,PasswordNeverExpires,Licenses,FullAccessPermissions,SendAsPermissions`n"
-$office365Users = Get-MsolUser | Select-Object UserPrincipalName,DisplayName,Office,BlockCredential,PasswordNeverExpires,LastPasswordChangeTimeStamp,Licenses
+$exportData = "UserPrincipalName,DisplayName,Office,LastLogonTime,AccountEnabled,PasswordNeverExpires,Licenses,FullAccessPermissions,SendAsPermissions`n"
+$office365Users = Get-AzureADUser -All $true | Select-Object UserPrincipalName,DisplayName,PhysicalDeliveryOfficeName,AccountEnabled,PasswordNeverExpire,AssignedLicenses
 foreach ($user in $office365Users)
 {
 	# Get the user data
 	$userPrincipalName = $user.UserPrincipalName
 	$lastLogonTime = (Get-MailboxStatistics -Identity $userPrincipalName -ErrorAction SilentlyContinue).LastLogonTime
 	$displayName = $user.DisplayName
-	$blockCredential = $user.BlockCredential
-	$passwordExpiration = $user.PasswordNeverExpires
-	$lastPasswordChange = $user.LastPasswordChangeTimeStamp
-	$office = $user.Office
+	$accountEnabled = $user.AccountEnabled
+	$office = $user.PhysicalDeliveryOfficeName
 	$fullAccess = (Get-MailboxPermission -Identity $user.UserPrincipalName -ErrorAction SilentlyContinue | Where-Object { $_.AccessRights.Contains("FullAccess") -and $_.User -match "^[a-zA-Z0-9.!£#$%&'^_`{}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" }).User -join ";"
 	$sendAs = (Get-RecipientPermission -Identity $user.UserPrincipalName -ErrorAction SilentlyContinue | Where-Object { $_.AccessRights.Contains("SendAs") -and $_.Trustee -match "^[a-zA-Z0-9.!£#$%&'^_`{}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" }).Trustee -join ";"
 
@@ -28,34 +26,33 @@ foreach ($user in $office365Users)
 	}
 	else
 	{
-		$lastLogonTime = [DateTime]::Parse($lastLogonTime).ToString("dd-MM-yyyy HH:mm")
+		$lastLogonTime = [DateTime]::ParseExact($lastLogonTime, "MM/dd/yyyy HH:mm:ss", $null).ToString("dd-MM-yyyy HH:mm")
 	}
-	if ($blockCredential -eq $False) {
-		$blockCredential = "Allowed"
+	if ($accountEnabled -eq $true) {
+		$accountEnabled = "Allowed"
 	}
 	else {
-		$blockCredential = "Blocked"
+		$accountEnabled = "Blocked"
 	}
-	if ($passwordExpiration -eq $true)
+	if ($user.PasswordNeverExpires -contains "DisablePasswordExpiration")
 	{
 		$passwordExpiration = "No"
 	}
 	else {
 		$passwordExpiration = "Yes"
 	}
-	if ($lastPasswordChange -eq $null)
-	{
-		$lastPasswordChange = "Never"
-	}
-	else
-	{
-		$lastPasswordChange = "{0:dd-MM-yyyy HH:mm}" -f (Get-Date -Date $lastPasswordChange -ErrorAction SilentlyContinue)
-	}
 
 	# Get the user licenses
-	$skus = $user.Licenses.AccountSku.SkuPartNumber
+	$script:skuPartNames = @()
+	$skuParts = Get-AzureADSubscribedSku | Select-Object SkuId,SkuPartNumber
+	$user.AssignedLicenses.SkuId | ForEach-Object {
+		$partNumber = $_
+		$script:skuPartNames += ($skuParts | Where-Object { $_.SkuId -eq $partNumber }).SkuPartNumber
+	}
+
+	# Translate the user licenses
 	$licenses = @()
-	foreach ($sku in $skus)
+	foreach ($sku in $skuPartNames)
 	{
 		switch($sku)
 		{
@@ -145,12 +142,14 @@ foreach ($user in $office365Users)
 			"EXCHANGESTANDARD" { $licenses += "Exchange Online (Plan 1)" }
 			"ENTERPRISEPACK" { $licenses += "Office 365 Enterprise E3" }
 			"EXCHANGEENTERPRISE" { $licenses += "Exchange Online (Plan 2)" }
+			"VISIOCLIENT" { $licenses += "Visio Pro for Office 365" }
+			"ENTERPRISEPREMIUM" { $licenses += "Office 365 Enterprise E5" }
 			default { $licenses += $sku }
 		}
 	}
 	$licenses = $licenses -join "; "
 
-	$exportData += "$userPrincipalName,$displayName,$office,$lastLogonTime,$lastPasswordChange,$blockCredential,$passwordExpiration,$licenses,$fullAccess,$sendAs`n"
+	$exportData += "`"$userPrincipalName`",`"$displayName`",`"$office`",`"$lastLogonTime`",`"$accountEnabled`",`"$passwordExpiration`",`"$licenses`",`"$fullAccess`",`"$sendAs`"`n"
 }
 
 # TEMP: Show data on console
@@ -170,12 +169,11 @@ $worksheet.Cells.Item(1,1) = "Username"
 $worksheet.Cells.Item(1,2) = "Displayname"
 $worksheet.Cells.Item(1,3) = "Office"
 $worksheet.Cells.Item(1,4) = "Last login"
-$worksheet.Cells.Item(1,5) = "Last password change"
-$worksheet.Cells.Item(1,6) = "Sign-in status"
-$worksheet.Cells.Item(1,7) = "Password Expires"
-$worksheet.Cells.Item(1,8) = "Licenses"
-$worksheet.Cells.Item(1,9) = "Full acccess permissions"
-$worksheet.Cells.Item(1,10) = "Sendas permissions"
+$worksheet.Cells.Item(1,5) = "Sign-in status"
+$worksheet.Cells.Item(1,6) = "Password Expires"
+$worksheet.Cells.Item(1,7) = "Licenses"
+$worksheet.Cells.Item(1,8) = "Full acccess permissions"
+$worksheet.Cells.Item(1,9) = "Sendas permissions"
 
 # Add data
 $i = 2
@@ -185,12 +183,11 @@ foreach($row in $exportData)
 	$worksheet.Cells.Item($i,2) = $row.DisplayName
 	$worksheet.Cells.Item($i,3) = $row.Office
 	$worksheet.Cells.Item($i,4) = $row.LastLogonTime
-	$worksheet.Cells.Item($i,5) = $row.LastPasswordChangeTimeStamp
-	$worksheet.Cells.Item($i,6) = $row.BlockCredential
-	$worksheet.Cells.Item($i,7) = $row.PasswordNeverExpires
-	$worksheet.Cells.Item($i,8) = $row.Licenses
-	$worksheet.Cells.Item($i,9) = $row.FullAccessPermissions
-	$worksheet.Cells.Item($i,10) = $row.SendAsPermissions
+	$worksheet.Cells.Item($i,5) = $row.AccountEnabled
+	$worksheet.Cells.Item($i,6) = $row.PasswordNeverExpires
+	$worksheet.Cells.Item($i,7) = $row.Licenses
+	$worksheet.Cells.Item($i,8) = $row.FullAccessPermissions
+	$worksheet.Cells.Item($i,9) = $row.SendAsPermissions
 	$i++
 }
 
