@@ -2,18 +2,18 @@
 # For more information: https://support.microsoft.com/en-us/kb/274443
 
 # Enumerate a list of folders
-$Folders = Get-ChildItem |? { $_.PSIsContainer }
-foreach ($Folder in $Folders)
+$folders = Get-ChildItem | Where-Object { $_.PSIsContainer }
+foreach ($folder in $folders)
 {
     # Recursively set owner 
-    takeown.exe /F $($Folder.FullName) /R /D Y | Out-Null
+    Invoke-Command "takeown.exe /F $($folder.FullName) /R /D Y" | Out-Null
 
     # Recursively re-enable inherited permissions on the folder
-    icacls.exe $($Folder.FullName) /reset /T /C /L /Q
+    Invoke-Command "icacls.exe $($folder.FullName) /reset /T /C /L /Q"
 
     # Recursively grant the user access rights to the folder
-    icacls.exe $($Folder.FullName) /grant ($($Folder.BaseName) + ":(OI)(CI)F") /C /L /Q
+    Invoke-Command "icacls.exe $($folder.FullName) /grant $($folder.BaseName):(OI)(CI)F /C /L /Q"
 
     # Set the owner back to the user
-    icacls.exe $($Folder.FullName) /setowner $($Folder.BaseName) /T /C /L /Q
+    Invoke-Command "icacls.exe $($folder.FullName) /setowner $($folder.BaseName) /T /C /L /Q"
 }
